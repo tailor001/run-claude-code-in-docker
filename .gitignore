@@ -1,0 +1,7 @@
+# Ignore temporary files
+*.tmp
+*.temp
+test.env
+
+.claude-system/
+.claude/

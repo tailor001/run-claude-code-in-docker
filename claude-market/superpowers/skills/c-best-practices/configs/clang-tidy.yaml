@@ -1,0 +1,44 @@
+# clang-tidy configuration for C best practices
+# Run: clang-tidy file.c --config-file=clang-tidy.yaml
+
+Checks: >
+  modernize-*,
+  readability-*,
+  performance-*,
+  bugprone-*,
+  concurrency-*,
+  -modernize-use-trailing-return-type,
+  -readability-identifier-length
+
+CheckOptions:
+  # Enforce consistent naming conventions
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.FunctionCase
+    value: snake_case
+  - key: readability-identifier-naming.VariableCase
+    value: snake_case
+  - key: readability-identifier-naming.ConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.MemberCase
+    value: snake_case
+  - key: readability-identifier-naming.EnumConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: UPPER_CASE
+
+  # Buffer overflow detection
+  - key: bugprone-narrowing-conversions.WarnOnIntegerNarrowingConversion
+    value: true
+
+  # String handling safety
+  - key: bugprone-strcpy-eq-1.WarnOnEq1
+    value: true
+
+  # Memory safety
+  - key: bugprone-dangling-handle.HandleClasses
+    value: std::unique_ptr;std::shared_ptr
+
+  # Performance considerations
+  - key: performance-move-const-arg.CheckTriviallyCopyableMove
+    value: false

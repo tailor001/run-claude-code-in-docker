@@ -1,0 +1,71 @@
+FROM debian:trixie-20251208-slim
+LABEL description="debian 13 trixie base"
+
+# ---------- build-time args ----------
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TZ=Asia/Shanghai
+ARG LANG=C.UTF-8
+ARG http_proxy
+
+# ---------- basic env (runtime safe) ----------
+ENV TZ=${TZ}
+ENV LANG=${LANG}
+ENV LC_ALL=${LANG}
+
+# ---------- apt sources ----------
+COPY ./debian.sources.13-trixie /etc/apt/sources.list.d/debian.sources
+
+# ---------- install base packages ----------
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        tzdata \
+        locales \
+        curl \
+        wget \
+        gnupg \
+        netbase \
+        iproute2 \
+        procps \
+    ; \
+    apt-get clean; \
+    rm -rf /var/lib/apt/lists/*
+# netbase 让网络“说得通”
+# iproute2 让网络“看得见”
+# procps 让系统“摸得着”
+
+# ---------- timezone ----------
+RUN set -eux; \
+    ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime; \
+    echo "${TZ}" > /etc/timezone
+
+# ---------- locale ----------
+RUN set -eux; \
+    sed -i "s/^# ${LANG}/${LANG}/" /etc/locale.gen; \
+    locale-gen; \
+    update-locale LANG=${LANG}
+
+# ---------- default shell behavior ----------
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# ---------- 常用软件 ----------
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+    ripgrep python3 git\
+    ; \
+    ln -s /usr/bin/python3 /usr/bin/python; \
+    apt-get clean; \
+    rm -rf /var/lib/apt/lists/*
+
+# 只为安装uv命令临时设置代理，apt等命令不受代理影响
+# 手动下载并安装uv到/usr/local/bin，确保所有用户都能使用
+RUN ${http_proxy:+env http_proxy="$http_proxy"} \
+    curl --connect-timeout 10 -LsSf https://github.com/astral-sh/uv/releases/latest/download/uv-x86_64-unknown-linux-gnu.tar.gz | tar -xz -C /tmp && \
+    mv /tmp/uv-x86_64-unknown-linux-gnu/uv /usr/local/bin/ && \
+    rm -rf /tmp/uv-x86_64-unknown-linux-gnu
+
+# ---------- sanity check (optional) ----------
+# RUN date && locale
+# RUN apt-get update --fix-missing && apt-get -y upgrade

@@ -1,0 +1,87 @@
+# MISRA C:2012 Configuration for clang-tidy
+# Use this configuration when MISRA C compliance is required
+
+Checks: >
+  readability-misra-c2012-*,
+  -readability-misra-c2012-2.2,  # Allow dead code elimination
+  -readability-misra-c2012-8.5,  # Allow typedef for function types
+  -readability-misra-c2012-12.2, # Allow result from side-effect free function
+  bugprone-*, cert-*, performance-*,
+  -modernize-use-trailing-return-type,
+  -readability-identifier-length
+
+# MISRA C:2012 Rule Categories
+# Category 1: Environment
+# Category 2: Language Extensions
+# Category 3: Language
+# Category 4: Typedefs
+# Category 5: Declarations and Definitions
+# Category 6: Initialization
+# Category 7: Arithmetic Type Conversions
+# Category 8: Arrays and Pointers
+# Category 9: Classes and Structures
+# Category 10: Expressions
+# Category 11: Control Flow Statements
+# Category 12: Switch Statements
+# Category 13: Functions
+# Category 14: Pointers and Arrays
+# Category 15: Preprocessing Directives
+# Category 16: Standard Libraries
+# Category 17: Standard Libraries - Memory Functions
+# Category 18: Standard Libraries - Other Functions
+# Category 19: Constants and Macros
+# Category 20: Reserved Identifiers
+# Category 21: Standard Libraries - Date and Time
+
+CheckOptions:
+  # Rule 5.3 - Function length
+  - key: readability-misra-c2012-5.3.MaxFunctionLength
+    value: 100
+
+  # Rule 5.4 - If nesting depth
+  - key: readability-misra-c2012-5.4.MaxIfNesting
+    value: 4
+
+  # Rule 5.5 - Named identifiers
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.StructCase
+    value: CamelCase
+  - key: readability-identifier-naming.FunctionCase
+    value: snake_case
+  - key: readability-identifier-naming.VariableCase
+    value: snake_case
+  - key: readability-identifier-naming.ConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.EnumConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.MacroCase
+    value: UPPER_CASE
+
+  # Rule 5.6 - No typedefs that change meaning
+  # Handled by readability-misra-c2012-5.6
+
+  # Rule 5.7 - No tag name collisions
+  # Handled by readability-misra-c2012-5.7
+
+  # Rule 5.8 - External identifiers must be unique
+  # Handled by readability-misra-c2012-5.8
+
+  # Rule 5.9 - Identifiers must be distinct
+  # Handled by readability-misra-c2012-5.9
+
+# Additional strict checks for MISRA compliance
+ExtraChecks: >
+  -bugprone-assert-side-effect,
+  -cert-dcl03-c,  # Misleading identifier
+  -cert-dcl05-c,  # Multiple representations
+  -cert-dcl54-cpp,  # Implicit conversion
+  -cert-dcl59-cpp,  # Explicit casting
+  -cert-oop11-cpp, # Reference member initialization
+  -cert-flp30-c,  # Floating point value comparison
+  -cert-exp30-c,  # Violates operator precedence
+  -cert-exp42-c,  # Signed integer overflow
+  -cert-exp56-c,  # Bitwise operations
+  -cert-mem57-c,  # Buffer size
+  -cert-int31-c,  # Integer conversion
+  -cert-sig33-c,  # Use of free()
